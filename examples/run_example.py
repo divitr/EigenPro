@@ -49,14 +49,9 @@ def main():
     kernel_fn = lambda x, z: kernels.laplacian(x, z, bandwidth=20.)
     device = dev.Device.create(use_gpu_if_available=True)
     
-    # To run on CPU, dtype can not be `torch.float16` since
-    # PyTorch does not support half-precision multiplication on CPU.
-    if device.devices[0].type == 'cpu':
-        dtype = torch.float32
-    elif device.devices[0].type == 'cuda':
-        dtype = torch.float16
-    else:
-        raise ValueError(f"Unknown device type: {device.devices[0].type}")
+    #dtype
+    dtype = torch.float32
+
 
     # Note: if you want to use the whole X as your centers switch to
     # EigenPro 2.0 which is a faster method
@@ -76,9 +71,9 @@ def main():
         tmp_centers_coeff=2)
 
     model = solver.fit(model, X_train, Y_train, X_test, Y_test, device,
-                       dtype=dtype, kernel=kernel_fn, s_data=args.s_data,
-                       s_model=args.s_model, q_data=args.q_data,
-                       q_model=args.q_model, wandb=None, epochs=args.epochs,
+                       dtype=dtype, kernel=kernel_fn, n_data_pcd_nyst_samples=args.s_data,
+                       n_model_pcd_nyst_samples=args.s_model, n_data_pcd_eigenvals=args.q_data,
+                       n_model_pcd_eigenvals=args.q_model, wandb=None, epochs=args.epochs,
                        accumulated_gradients=accumulated_gradients)
 
 if __name__ == '__main__':
